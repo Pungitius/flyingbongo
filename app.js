@@ -7,8 +7,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
     let airfoilName = "";
     let chart;
     let bends = [];
+    let slits = [];
     let bendChart;
     let slitChart;
+    let errorThreshold = 0.005;
     let interpolatedData = [];
     (_a = document
         .getElementById("calculate-button")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", (e) => {
@@ -29,6 +31,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         plotBend();
         calculateSlits();
         plotSlits();
+        drawSVG();
     });
     function plotAirfoil() {
         const canvas = (document.getElementById("airfoilPlot"));
@@ -115,7 +118,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
         const totalLength = bends[bends.length - 1].totalLength;
         const step = 0.001;
         let aggregate = 0;
-        const errorThreshold = 0.005;
         for (let f = 0; f < totalLength; f += step) {
             let idx = 0;
             for (; idx < bends.length; idx++) {
@@ -172,5 +174,12 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 },
             },
         });
+    }
+    function drawSVG() {
+        // initialize SVG.js
+        let draw = SVG().addTo("#svg").size(800, 300);
+        // draw pink square
+        draw.rect(400 * bends[bends.length - 1].totalLength, 200).fill("none").stroke("#f06").fill();
+        slitData.forEach((slit) => draw.line(400 * slit.x, 0, 400 * slit.x, 200).fill("none").stroke("#f06"));
     }
 });
