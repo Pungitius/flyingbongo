@@ -35,7 +35,7 @@
 
             <label for="dat-input">.dat airfoil data</label>
 
-            <textarea id="dat-input" name="dat-input" rows="40">
+            <textarea id="dat-input" name="dat-input" rows="10">
 N-10
 1.0000     0.0034
 0.9500     0.0174
@@ -72,6 +72,33 @@ N-10
 1.0000     0.0000
 </textarea
             >
+            <div class="row">
+                <div class="six columns">
+                    <label for="errorThresholdInput">error threshold (for temporary debugging only)</label>
+                    <input class="u-full-width" type="number" value="0.005" id="errorThresholdInput">
+                  </div>
+            </div>
+            <div class="row">
+                <div class="six columns">
+                  <label for="thicknessInput">material thickness</label>
+                  <input class="u-full-width" type="number" placeholder="5mm" id="thicknessInput">
+                </div>
+                <div class="six columns">
+                    <label for="kerfInput">kerf</label>
+                    <input class="u-full-width" type="number" placeholder="0.10mm" id="kerfInput">
+                </div>
+              </div>
+              <div class="row">
+                <div class="six columns">
+                  <label for="chordInput">chord</label>
+                  <input class="u-full-width" type="number" placeholder="80mm" id="chordInput">
+                </div>
+                <div class="six columns">
+                    <label for="spanInput">span</label>
+                    <input class="u-full-width" type="number" placeholder="1000mm" id="spanInput">
+                </div>
+              </div>
+
             <button class="button-primary" id="calculate-button">
                 Calculate
             </button>
@@ -81,7 +108,7 @@ N-10
                 <canvas id="bendPlot" width="100" height="20"></canvas></div>
             <div class="graph"><h4>slit vs distance</h4>
                 <canvas id="slitPlot" width="100" height="20"></canvas></div>
-            <div class="graph"><h4>lasert cutter svg</h4>
+            <div class="graph"><h4>lasert cutter svg (preview)</h4>
                     <div id="svg"></div></div>
         </div>
     </body>

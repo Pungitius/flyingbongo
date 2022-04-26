@@ -12,8 +12,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
     let slitChart;
     let errorThreshold = 0.005;
     let interpolatedData = [];
+    let draw = SVG().addTo("#svg").size(800, 300);
     (_a = document
         .getElementById("calculate-button")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", (e) => {
+        var _a;
         const inputTextArea = (document.getElementById("dat-input"));
         const datFile = inputTextArea.value;
         const lines = datFile.split("\n");
@@ -26,6 +28,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
             const y = parseFloat(coords[1]);
             plotData.push({ x, y });
         });
+        errorThreshold = (_a = document.getElementById("errorThresholdInput")) === null || _a === void 0 ? void 0 : _a.value;
         plotAirfoil();
         calculateBend();
         plotBend();
@@ -177,7 +180,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     }
     function drawSVG() {
         // initialize SVG.js
-        let draw = SVG().addTo("#svg").size(800, 300);
+        draw.clear();
         // draw pink square
         draw.rect(400 * bends[bends.length - 1].totalLength, 200).fill("none").stroke("#f06").fill();
         slitData.forEach((slit) => draw.line(400 * slit.x, 0, 400 * slit.x, 200).fill("none").stroke("#f06"));

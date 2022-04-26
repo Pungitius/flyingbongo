@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     let interpolatedData: object[] = [];
 
+    let draw = SVG().addTo("#svg").size(800, 300);
+
     document
         .getElementById("calculate-button")
         ?.addEventListener("click", (e) => {
@@ -33,6 +35,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 const y: number = parseFloat(coords[1]);
                 plotData.push({ x, y });
             });
+            
+            errorThreshold = document.getElementById("errorThresholdInput")?.value;
 
             plotAirfoil();
             calculateBend();
@@ -208,7 +212,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     function drawSVG() {
         // initialize SVG.js
-        let draw = SVG().addTo("#svg").size(800, 300);
+        draw.clear()
 
         // draw pink square
         draw.rect(400 * bends[bends.length - 1].totalLength, 200).fill("none").stroke("#f06").fill();
