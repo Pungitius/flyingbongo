@@ -1,9 +1,14 @@
 document.addEventListener("DOMContentLoaded", (event) => {
     let plotData: object[] = [];
     let bendData: object[] = [];
+    let slitData: object[] = [];
     let airfoilName: string = "";
     let chart;
+    let bends = [];
     let bendChart;
+    let slitChart;
+
+    let interpolatedData: object[] = [];
 
     document
         .getElementById("calculate-button")
@@ -16,7 +21,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
             airfoilName = lines.shift()!;
 
-            const filteredLines = lines.filter((e) => e !== "")
+            const filteredLines = lines.filter((e) => e !== "");
 
             plotData = [];
             filteredLines.forEach((line) => {
@@ -29,6 +34,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
             plotAirfoil();
             calculateBend();
             plotBend();
+            calculateSlits();
+            plotSlits();
         });
 
     function plotAirfoil() {
@@ -62,9 +69,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     function calculateBend() {
         let totalLength = 0;
-        bendData = []
+        bendData = [];
         for (let i = 1; i < plotData.length - 1; i++) {
-
             const lastPoint = new Victor(plotData[i - 1].x, plotData[i - 1].y);
             const currentPoint = new Victor(plotData[i].x, plotData[i].y);
             const nextPoint = new Victor(plotData[i + 1].x, plotData[i + 1].y);
@@ -77,21 +83,24 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
             let segmentBendAngle = Math.acos(
                 backwardSegment.dot(forwardSegment) /
-                (backwardSegment.length() * forwardSegment.length())
+                    (backwardSegment.length() * forwardSegment.length())
             );
 
-            
-
             // there has to be a better solution for this
-            segmentBendAngle = segmentBendAngle > Math.PI ? segmentBendAngle : segmentBendAngle - Math.PI;
-            segmentBendAngle *= -1
+            segmentBendAngle =
+                segmentBendAngle > Math.PI
+                    ? segmentBendAngle
+                    : segmentBendAngle - Math.PI;
+            segmentBendAngle *= -1;
             //segmentBendAngle = Math.abs(Math.PI - segmentBendAngle)
             //segmentBendAngle = (segmentBendAngle - Math.PI) % Math.PI
 
-            console.log(i, totalLength, segmentBendAngle)
-
-            bendData.push({ x: totalLength, y: segmentBendAngle });
+            bends.push({ totalLength, segmentBendAngle });
         }
+
+        bends.forEach((e) => {
+            bendData.push({ x: e.totalLength, y: e.segmentBendAngle });
+        });
     }
 
     function plotBend() {
@@ -115,6 +124,79 @@ document.addEventListener("DOMContentLoaded", (event) => {
                     x: {
                         type: "linear",
                         position: "bottom",
+                    },
+                },
+            },
+        });
+    }
+
+    function calculateSlits() {
+        slitData = [];
+        interpolatedData = [];
+
+        const totalLength = bends[bends.length - 1].totalLength;
+        const step = 0.001;
+        let aggregate = 0;
+        const errorThreshold = 0.005;
+
+        for (let f = 0; f < totalLength; f += step) {
+            let idx = 0;
+            for (; idx < bends.length; idx++) {
+                if (bends[idx].totalLength > f) break;
+            }
+
+            let t = 0;
+
+            if (idx > 0 && f != bends[idx - 1].totalLength) {
+                t =
+                    (f - bends[idx - 1].totalLength) /
+                    (bends[idx].totalLength - bends[idx - 1].totalLength);
+            }
+
+            let graphValue =
+                bends[Math.floor(idx)].segmentBendAngle +
+                t *
+                    (bends[Math.min(bends.length - 1, Math.ceil(idx))]
+                        .segmentBendAngle -
+                        bends[Math.floor(idx)].segmentBendAngle);
+
+            interpolatedData.push({ x: f, y: t });
+
+            aggregate += step * graphValue;
+
+            if (aggregate < -errorThreshold) {
+                aggregate += errorThreshold;
+                slitData.push({ x: f, y: 0 });
+            } else if (aggregate > errorThreshold) {
+                aggregate -= errorThreshold;
+                slitData.push({ x: f, y: 0 });
+            }
+        }
+    }
+
+    function plotSlits() {
+        const canvas = <HTMLCanvasElement>document.getElementById("slitPlot")!;
+        const ctx = canvas.getContext("2d");
+
+        if (slitChart) slitChart.destroy();
+        slitChart = new Chart(ctx, {
+            type: "line",
+            data: {
+                datasets: [
+                    {
+                        label: "slit position",
+                        data: slitData,
+                        backgroundColor: "rgb(255, 99, 132)",
+                    },
+                ],
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: "linear",
+                        position: "bottom",
+                        min: 0,
+                        max: 2,
                     },
                 },
             },
