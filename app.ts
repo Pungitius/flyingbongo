@@ -16,8 +16,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
             airfoilName = lines.shift()!;
 
+            const filteredLines = lines.filter((e) => e !== "")
+
             plotData = [];
-            lines.forEach((line) => {
+            filteredLines.forEach((line) => {
                 const coords: string[] = line.split("     ");
                 const x: number = parseFloat(coords[0]);
                 const y: number = parseFloat(coords[1]);
@@ -67,7 +69,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
             const currentPoint = new Victor(plotData[i].x, plotData[i].y);
             const nextPoint = new Victor(plotData[i + 1].x, plotData[i + 1].y);
 
-            const backwardSegment = currentPoint.subtract(lastPoint);
+            const backwardSegment = lastPoint.subtract(currentPoint);
             const forwardSegment = nextPoint.subtract(currentPoint);
 
             const segmentLength = forwardSegment.length();
@@ -78,11 +80,15 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 (backwardSegment.length() * forwardSegment.length())
             );
 
-            console.log(segmentBendAngle)
+            
 
             // there has to be a better solution for this
-            segmentBendAngle = segmentBendAngle < Math.PI/2 ? segmentBendAngle : Math.PI - segmentBendAngle;
+            segmentBendAngle = segmentBendAngle > Math.PI ? segmentBendAngle : segmentBendAngle - Math.PI;
+            segmentBendAngle *= -1
             //segmentBendAngle = Math.abs(Math.PI - segmentBendAngle)
+            //segmentBendAngle = (segmentBendAngle - Math.PI) % Math.PI
+
+            console.log(i, totalLength, segmentBendAngle)
 
             bendData.push({ x: totalLength, y: segmentBendAngle });
         }

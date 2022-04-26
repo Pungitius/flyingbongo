@@ -30,12 +30,7 @@
     </head>
     <body>
         <div class="container">
-            <h1>flying bongo</h1>
-            <img
-                src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Tragelaphus_eurycerus_isaaciPCCA20071227-8374B.jpg"
-                alt="bongo antilope"
-                width="200px"
-            />
+            <h1>flying bongo 🦌</h1>
 
             <label for="dat-input">.dat airfoil data</label>
 
@@ -79,8 +74,12 @@ N-10
             <button class="button-primary" id="calculate-button">
                 Calculate
             </button>
-            <canvas id="airfoilPlot" width="100" height="20"></canvas>
-            <canvas id="bendPlot" width="100" height="20"></canvas>
+            <div class="graph"><h4>airfoil plot</h4>
+                <canvas id="airfoilPlot" width="100" height="20"></canvas></div>
+            
+            <div class="graph"><h4>bend vs distance</h4>
+                <canvas id="bendPlot" width="100" height="20"></canvas></div>
+            
         </div>
     </body>
 </html>
