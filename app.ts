@@ -30,7 +30,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
             plotData = [];
             filteredLines.forEach((line) => {
-                const coords: string[] = line.split("     ");
+                const coords: string[] = line.split(" ").filter((s) => s !== "")
+                // const coords: string[] = line.split("     ");
                 const x: number = parseFloat(coords[0]);
                 const y: number = parseFloat(coords[1]);
                 plotData.push({ x, y });
@@ -83,6 +84,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     function calculateBend() {
         let totalLength = 0;
+        bends = []
         bendData = [];
         for (let i = 1; i < plotData.length - 1; i++) {
             const lastPoint = new Victor(plotData[i - 1].x, plotData[i - 1].y);
