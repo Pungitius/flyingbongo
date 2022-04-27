@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     let interpolatedData: object[] = [];
 
-    let draw = SVG().addTo("#svg").size(800, 300);
+    let draw = SVG().addTo("#svg").size(800, 200);
 
     document
         .getElementById("calculate-button")
@@ -45,6 +45,12 @@ document.addEventListener("DOMContentLoaded", (event) => {
             plotSlits();
             drawSVG();
         });
+
+    document.getElementById("downloadButton")?.addEventListener("click", (e) => {
+        const svgEl = document.getElementById("svg")?.firstChild
+        console.log(svgEl)
+        saveSvg(svgEl, "test.svg")
+    })
 
     function plotAirfoil() {
         const canvas = <HTMLCanvasElement>(
@@ -143,7 +149,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         interpolatedData = [];
 
         const totalLength = bends[bends.length - 1].totalLength;
-        const step = 0.001;
+        const step = 0.00001;
         let aggregate = 0;
 
         for (let f = 0; f < totalLength; f += step) {
@@ -220,5 +226,20 @@ document.addEventListener("DOMContentLoaded", (event) => {
         slitData.forEach((slit) => draw.line(400 * slit.x, 0, 400 * slit.x, 200).fill("none").stroke("#f06")) 
 
         
+    }
+
+    // https://stackoverflow.com/questions/23218174/how-do-i-save-export-an-svg-file-after-creating-an-svg-with-d3-js-ie-safari-an
+    function saveSvg(svgEl, name) {
+        svgEl.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        var svgData = svgEl.outerHTML;
+        var preface = '<?xml version="1.0" standalone="no"?>\r\n';
+        var svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
+        var svgUrl = URL.createObjectURL(svgBlob);
+        var downloadLink = document.createElement("a");
+        downloadLink.href = svgUrl;
+        downloadLink.download = name;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
     }
 });

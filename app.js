@@ -1,6 +1,6 @@
 "use strict";
 document.addEventListener("DOMContentLoaded", (event) => {
-    var _a;
+    var _a, _b;
     let plotData = [];
     let bendData = [];
     let slitData = [];
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     let slitChart;
     let errorThreshold = 0.005;
     let interpolatedData = [];
-    let draw = SVG().addTo("#svg").size(800, 300);
+    let draw = SVG().addTo("#svg").size(800, 200);
     (_a = document
         .getElementById("calculate-button")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", (e) => {
         var _a;
@@ -35,6 +35,12 @@ document.addEventListener("DOMContentLoaded", (event) => {
         calculateSlits();
         plotSlits();
         drawSVG();
+    });
+    (_b = document.getElementById("downloadButton")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", (e) => {
+        var _a;
+        const svgEl = (_a = document.getElementById("svg")) === null || _a === void 0 ? void 0 : _a.firstChild;
+        console.log(svgEl);
+        saveSvg(svgEl, "test.svg");
     });
     function plotAirfoil() {
         const canvas = (document.getElementById("airfoilPlot"));
@@ -119,7 +125,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         slitData = [];
         interpolatedData = [];
         const totalLength = bends[bends.length - 1].totalLength;
-        const step = 0.001;
+        const step = 0.00001;
         let aggregate = 0;
         for (let f = 0; f < totalLength; f += step) {
             let idx = 0;
@@ -184,5 +190,19 @@ document.addEventListener("DOMContentLoaded", (event) => {
         // draw pink square
         draw.rect(400 * bends[bends.length - 1].totalLength, 200).fill("none").stroke("#f06").fill();
         slitData.forEach((slit) => draw.line(400 * slit.x, 0, 400 * slit.x, 200).fill("none").stroke("#f06"));
+    }
+    // https://stackoverflow.com/questions/23218174/how-do-i-save-export-an-svg-file-after-creating-an-svg-with-d3-js-ie-safari-an
+    function saveSvg(svgEl, name) {
+        svgEl.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        var svgData = svgEl.outerHTML;
+        var preface = '<?xml version="1.0" standalone="no"?>\r\n';
+        var svgBlob = new Blob([preface, svgData], { type: "image/svg+xml;charset=utf-8" });
+        var svgUrl = URL.createObjectURL(svgBlob);
+        var downloadLink = document.createElement("a");
+        downloadLink.href = svgUrl;
+        downloadLink.download = name;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
     }
 });
