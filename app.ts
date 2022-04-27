@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         interpolatedData = [];
 
         const totalLength = bends[bends.length - 1].totalLength;
-        const step = 0.01;
+        const step = 0.005;
         let aggregate = 0;
 
         for (let f = 0; f < totalLength; f += step) {
